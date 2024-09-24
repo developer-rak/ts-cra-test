@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useState } from 'react';
+import { Component, ReactElement, ReactNode, useState } from 'react';
 import './App.css';
 
 // conventional props
@@ -28,14 +28,14 @@ function TextWithNumber ({
   header,
   children,
 }: {
-  header: (num: number) => ReactNode
+  header?: (num: number) => ReactNode
   children: (num: number) => ReactNode
 }) {
   const [state, stateSet] = useState(1);
 
   return (
     <div>
-      <h2>{header(state)}</h2>
+      {header && <h2>{header?.(state)}</h2>}
       <div>
         {children(state)}
       </div>
@@ -46,15 +46,51 @@ function TextWithNumber ({
   )
 }
 
+// function with generics
+// List
+function List<ListItem>({
+  items,
+  render,
+}: {
+  items: ListItem[];
+  render: (item: ListItem) => ReactNode;
+}) {
+  return (
+    <ul>
+      {items.map((item, index) => (
+        <li key={index}>{render(item)}</li>
+      ))}
+    </ul>
+  );
+}
+
+
+// Class Components
+class MyHeader extends Component<{
+  title: ReactNode,
+}> {
+  render() {
+    return (
+      <h1>{this.props.title}</h1>
+    )
+  }
+}
+
 function App() {
   return (
     <div>
       <Heading title='Hello'></Heading>
       <HeadingWithContent><strong>Hi!</strong></HeadingWithContent>
       <Container>Foooo</Container>
-      <TextWithNumber header={(num: number) => <span>Header {num}</span>}>
+      <TextWithNumber>
         {(num: number) => <div>Today's number is {num}</div>}
       </TextWithNumber>
+      {/* function with generics */}
+      <List
+        items={["RashiD", "AroosA", "koM"]}
+        render={(item: string) => <div>{item.toLowerCase()}</div>}
+      ></List>
+      <MyHeader title="There yeh go!"></MyHeader>
     </div>
   );
 }
